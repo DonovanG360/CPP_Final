@@ -3,9 +3,7 @@
 /*     CONSTRUCTORS     */
 
 BudgetItem::BudgetItem() {
-	numExpenses = 0;
 	budgetItemName = "";
-	numExpenses++;
 }
 
 /*     SET MEMBER FUNCTIONS     */

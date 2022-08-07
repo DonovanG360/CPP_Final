@@ -7,7 +7,6 @@ using namespace std;
 
 class BudgetItem {
 	private:
-		static int numExpenses;
 		string budgetItemName;
 		vector<double> previousExpenses;
 	public:
@@ -16,6 +15,5 @@ class BudgetItem {
 		void setPreviousExpenses(double);
 		string getBudgetItemName();
 		double getPreviousExpenses(int);
-		int getNumExpenses();
 };
 
