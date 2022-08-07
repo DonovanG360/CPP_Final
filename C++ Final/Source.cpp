@@ -23,14 +23,21 @@
 
 using namespace std;
 
+// ***************************
+//      EXCEPTION CLASSES
+// ***************************
+
+class titleNotFound {};
+
 // **********************
 //      PROTOTYPES
 // **********************
 
 int displayMenu();
-void newItem(vector<BudgetItem> &);
-void allItems(vector<BudgetItem>);
-int addExpense(vector<BudgetItem>&);
+void newItem(vector<MonthlyExpense> &, vector<SingleExpense> &);
+void allItems(vector<MonthlyExpense>, vector<SingleExpense> );
+int addExpense(vector<MonthlyExpense> &);
+int searchAlgo(vector<MonthlyExpense>, string);
 
 // ************************
 //      MAIN FUNCTION
@@ -38,7 +45,8 @@ int addExpense(vector<BudgetItem>&);
 
 int main() {
 	int uChoice = 0;
-	vector<BudgetItem> Items;
+	vector<SingleExpense> singlePurchases;
+	vector<MonthlyExpense> monthlyExpenses;
 	cout << "Welcome to the monthly expense calculator!" << endl;
 	do {
 		cout << "\n";
@@ -46,16 +54,16 @@ int main() {
 
 		switch (uChoice) {
 			case 1: {
-				newItem(Items);
+				newItem(monthlyExpenses, singlePurchases);
 				break;
 			}
 			case 2: {
-				addExpense(Items);
+				addExpense(monthlyExpenses);
 				break;
 			}
 
 			case 4: {
-				allItems(Items);
+				allItems(monthlyExpenses, singlePurchases);
 				break;
 			}
 		}
@@ -104,63 +112,143 @@ int displayMenu() {
 //		ADD NEW ITEM FUNCTION
 // *******************************
 
-void newItem(vector<BudgetItem> &totalItems, vector<) {
+void newItem(vector<MonthlyExpense> &monthlyItems, vector<SingleExpense> &singleItems) {
 	string name;
-	cout << "Please enter the name of the monthly expense: "; cin.ignore(1, '\n');  getline(cin, name);
-	BudgetItem newItem(name);
-	totalItems.push_back(newItem);
+	int uChoice;
+	bool isValInput;
+	cout << "   Is this a: " << endl;
+	cout << "1. Monthly expense" << endl;
+	cout << "2. Single time purchase" << endl;
+	cout << "Enter your choice: "; cin >> uChoice;
+	// Input validation
+	if (uChoice != 1 && uChoice != 2) {
+		isValInput = false;
+		while (isValInput == false) {
+			cout << "Input is invalid please enter a valid choice: "; cin >> uChoice;
+			if (uChoice == 1 || uChoice == 2) {
+				isValInput = true;
+			}
+		}
+	}
+	cout << "\n";
+	switch (uChoice) {
+		case 1: {
+			int date;
+			cout << "Please enter the name of the monthly expense: "; cin.ignore(1, '\n');  getline(cin, name);
+			cout << "Please enter the day the payment is due each month: "; cin >> date;
+			// Input validation
+			if (date > 31 || date < 1) {
+				isValInput = false;
+				while (isValInput == false) {
+					cout << "Invalid date: Please enter a new date: "; cin >> date;
+					if (date > 0 && date <= 31) {
+						isValInput = true;
+					}
+				}
+			}
+			MonthlyExpense newExpense(date, name);
+			monthlyItems.push_back(newExpense);
+			break;
+		}
+		case 2: {
+			float cost;
+			cout << "Please enter the purchase name: "; cin.ignore(1, '\n'); getline(cin, name);
+			cout << "Please enter the cost: $"; cin >> cost;
+			if (cost < 0) {
+				isValInput = false;
+				while (isValInput == false) {
+					cout << "Please enter a valid price: $"; cin >> cost;
+					if (cost > 0) {
+						isValInput = true;
+					}
+				}
+			}
+			SingleExpense newPurchase(cost, name);
+			singleItems.push_back(newPurchase);
+			break;
+		}
+	}
 }
 
 // ****************************************
 //      ADD A MONTHLY EXPENSE FUNCTION
 // ****************************************
 
-int addExpense(vector<BudgetItem> &allItems) {
+int addExpense(vector<MonthlyExpense> &allMonths) {
 	char uChoice = 'a';
 	string name;
 	int x = 0;
 	cout << "Enter the name of the item you want to add to (case sensitive): "; cin.ignore(1, '\n'); getline(cin, name);
-	for (int i = 0; i < allItems.size(); i++) {
-		if (name.compare(allItems.at(i).getBudgetItemName())) {
-			x = i;
-		}
-		else {
-			cout << "Could not find item of the title " << name;
-			return 0;
-		}
-	}
-	double expense;
-	while (tolower(uChoice) != 'q') {
-		cout << "Enter in expense #" << allItems.at(x).getPreviousExpensesSize() << ": "; cin >> expense;
-		// Input Validation
-		if (expense < 0) {
-			bool isValInput = false;
-			while (isValInput == false) {
-				cout << "Expense cannot be negative! Please enter a valid expense: "; cin >> expense;
-				if (expense > 0) {
-					isValInput = true;
+	try {
+		x = searchAlgo(allMonths, name);
+
+		double expense;
+		while (tolower(uChoice) != 'q') {
+			cout << "Enter in expense #" << allMonths.at(x).getPreviousExpensesSize() + 1 << ": "; cin >> expense;
+			// Input Validation
+			if (expense < 0) {
+				bool isValInput = false;
+				while (isValInput == false) {
+					cout << "Expense cannot be negative! Please enter a valid expense: "; cin >> expense;
+					if (expense > 0) {
+						isValInput = true;
+					}
 				}
 			}
+			allMonths.at(x).setPreviousExpenses(expense);
+			cout << "Type 'q' to stop entering expenses, type 'c' to continue: "; cin >> uChoice;
 		}
-		allItems.at(x).setPreviousExpenses(expense);
-		cout << "Type 'q' to stop entering expenses, type 'c' to continue: "; cin >> uChoice;
+		return 1;
 	}
-	return 1;
+	catch (titleNotFound) {
+		cout << "Expense called " << name << " not found";
+	}
 }
 
+// ***************************
+//      SEARCH ALGORITHM
+// ***************************
 
+int searchAlgo(vector<MonthlyExpense> monthlyExpense, string name) {
+	int x;
+	bool isFound = false;
+	for (int i = 0; i < monthlyExpense.size(); i++) {
+		if (name.compare(monthlyExpense.at(i).getBudgetItemName())) {
+			x = i;
+			isFound = true;
+			return x;
+		}
+	}
+	if (isFound == false) {
+		throw titleNotFound();
+	}
+}
 
 // ********************************
 //      SEE ALL ITEMS FUNCTION
 // ********************************
 
-void allItems(vector<BudgetItem> allItems) {
-	cout << "Now displaying all items . . . " << endl;
-	for (int i = 0; i < allItems.size(); i++) {
-		cout << "Name: " << allItems.at(i).getBudgetItemName();
-		for (int j = 0; j < allItems.at(i).getPreviousExpensesSize(); j++) {
-			cout << "\tExpense #" << j + 1 << ": " << allItems.at(i).getPreviousExpenses(j) << endl;
+void allItems(vector<MonthlyExpense> monthlyExpenses, vector<SingleExpense> purchases) {\
+
+	if (purchases.size() != 0) {
+		cout << "Now displaying all items . . . " << endl;
+
+		for (int x = 0; x < purchases.size(); x++) {
+			cout << "Name: " << purchases.at(x).getBudgetItemName() << endl;
+			cout << "Purchase Cost: $" << fixed << setprecision(2) << purchases.at(x).getCost() << endl;
 		}
-		cout << "\n";
 	}
+
+	if (monthlyExpenses.size() != 0) {
+		cout << "\nNow displaying all monthly expenses . . . " << endl;
+		for (int i = 0; i < monthlyExpenses.size(); i++) {
+			cout << "Name: " << monthlyExpenses.at(i).getBudgetItemName() << endl;
+			cout << "Payment date: " << monthlyExpenses.at(i).getDate() << endl;
+			for (int j = 0; j < monthlyExpenses.at(i).getPreviousExpensesSize(); j++) {
+				cout << "\tExpense #" << j + 1 << ": " << monthlyExpenses.at(i).getPreviousExpenses(j) << endl;
+			}
+			cout << "\n";
+		}
+	}
+	
 }

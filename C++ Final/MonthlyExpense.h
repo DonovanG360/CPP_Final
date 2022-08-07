@@ -3,12 +3,13 @@
 class MonthlyExpense : public BudgetItem {
 	private:
 		vector<double> previousExpenses;
-		string paymentDueDate;
+		int paymentDueDate;
 	public:
 		MonthlyExpense();
+		MonthlyExpense(int, string);
 		void setPreviousExpenses(double);
-		void setNewDate(string);
-		string getDate();
+		void setNewDate(int);
+		int getDate();
 		double getPreviousExpenses(int);
 		int getPreviousExpensesSize();
 };

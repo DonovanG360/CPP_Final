@@ -1,19 +1,24 @@
 #include "MonthlyExpense.h"
 
 MonthlyExpense::MonthlyExpense() {
-	paymentDueDate = "";
+	paymentDueDate = 1;
 	budgetItemName = "";
+}
+
+MonthlyExpense::MonthlyExpense(int date, string name) {
+	paymentDueDate = date;
+	budgetItemName = name;
 }
 
 void MonthlyExpense::setPreviousExpenses(double expenses) {
 	previousExpenses.push_back(expenses);
 }
 
-void MonthlyExpense::setNewDate(string date) {
+void MonthlyExpense::setNewDate(int date) {
 	paymentDueDate = date;
 }
 
-string MonthlyExpense::getDate() {
+int MonthlyExpense::getDate() {
 	return paymentDueDate;
 }
 

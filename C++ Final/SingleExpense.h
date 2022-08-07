@@ -2,10 +2,11 @@
 #include "BudgetItem.h"
 class SingleExpense : public BudgetItem {
 	private:
-		double cost;
+		float cost;
 	public:
 		SingleExpense();
-		void setCost(double);
-		double getCost();
+		SingleExpense(float, string);
+		void setCost(float);
+		float getCost();
 };
 

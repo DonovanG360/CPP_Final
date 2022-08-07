@@ -5,10 +5,15 @@ SingleExpense::SingleExpense() {
 	budgetItemName = "";
 }
 
-void SingleExpense::setCost(double itemCost) {
+SingleExpense::SingleExpense(float price, string name) {
+	cost = price;
+	budgetItemName = name;
+}
+
+void SingleExpense::setCost(float itemCost) {
 	cost = itemCost;
 }
 
-double SingleExpense::getCost() {
+float SingleExpense::getCost() {
 	return cost;
 }
