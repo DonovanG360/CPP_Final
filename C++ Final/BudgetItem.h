@@ -6,15 +6,12 @@
 using namespace std;
 
 class BudgetItem {
-	private:
+	protected:
 		string budgetItemName;
-		vector<double> previousExpenses;
 	public:
 		BudgetItem();
 		BudgetItem(string);
 		void setBudgetItemName(string);
-		void setPreviousExpenses(double);
 		string getBudgetItemName();
-		double getPreviousExpenses(int);
 };
 
