@@ -2,15 +2,15 @@
 #include "BudgetItem.h"
 class MonthlyExpense : public BudgetItem {
 	private:
-		vector<double> previousExpenses;
+		vector<float> previousExpenses;
 		int paymentDueDate;
 	public:
 		MonthlyExpense();
 		MonthlyExpense(int, string);
-		void setPreviousExpenses(double);
+		void setPreviousExpenses(float);
 		void setNewDate(int);
 		int getDate();
-		double getPreviousExpenses(int);
+		float getPreviousExpenses(int);
 		int getPreviousExpensesSize();
 };
 

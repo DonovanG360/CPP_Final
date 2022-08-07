@@ -77,8 +77,9 @@ void deletion(vector<T> &expenses) {
 int displayMenu();
 void newItem(vector<MonthlyExpense> &, vector<SingleExpense> &);
 void allItems(vector<MonthlyExpense>, vector<SingleExpense> );
-int addExpense(vector<MonthlyExpense> &);
+int submitPayment(vector<MonthlyExpense> &);
 int grabUChoice();
+void totalAllExpenses(vector<MonthlyExpense>, vector<SingleExpense>);
 
 // ************************
 //      MAIN FUNCTION
@@ -99,7 +100,7 @@ int main() {
 				break;
 			}
 			case 2: {
-				addExpense(monthlyExpenses);
+				submitPayment(monthlyExpenses);
 				break;
 			}
 			case 3: {
@@ -115,6 +116,9 @@ int main() {
 			case 4: {
 				allItems(monthlyExpenses, singlePurchases);
 				break;
+			}
+			case 5: {
+				totalAllExpenses(monthlyExpenses, singlePurchases);
 			}
 		}
 
@@ -234,7 +238,7 @@ void newItem(vector<MonthlyExpense> &monthlyItems, vector<SingleExpense> &single
 //      ADD A MONTHLY EXPENSE FUNCTION
 // ****************************************
 
-int addExpense(vector<MonthlyExpense> &allMonths) {
+int submitPayment(vector<MonthlyExpense> &allMonths) {
 	char uChoice = 'a';
 	string name;
 	int x = 0;
@@ -293,4 +297,27 @@ void allItems(vector<MonthlyExpense> monthlyExpenses, vector<SingleExpense> purc
 		}
 	}
 	
+}
+
+// ****************************
+//      TOTAL ALL EXPENSES
+// ****************************
+
+void totalAllExpenses(vector<MonthlyExpense> allMonthlyExpenses, vector<SingleExpense> everySinglePurchase) {
+	float subtotalMonth = 0;
+	float subtotalPurchase = 0;
+	float total = 0;
+	cout << "Now totaling all expenses . . . " << endl;
+	for (int i = 0; i < everySinglePurchase.size(); i++) {
+		subtotalPurchase = subtotalPurchase + everySinglePurchase.at(i).getCost();
+	}
+	for (int i = 0; i < allMonthlyExpenses.size(); i++) {
+		for (int j = 0; j < allMonthlyExpenses.at(i).getPreviousExpensesSize(); j++) {
+			subtotalMonth = subtotalMonth + allMonthlyExpenses.at(i).getPreviousExpenses(j);
+		}
+	}
+	total = subtotalMonth + subtotalPurchase;
+	cout << "The total for all purchases is:        $" << fixed << setprecision(2) << subtotalPurchase << endl;
+	cout << "The total for all monthly payments is: $" << fixed << setprecision(2) << subtotalMonth << endl;
+	cout << "The total put together is:             $" << fixed << setprecision(2) << total << endl;
 }

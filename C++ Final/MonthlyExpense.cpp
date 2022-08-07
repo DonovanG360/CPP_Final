@@ -10,7 +10,7 @@ MonthlyExpense::MonthlyExpense(int date, string name) {
 	budgetItemName = name;
 }
 
-void MonthlyExpense::setPreviousExpenses(double expenses) {
+void MonthlyExpense::setPreviousExpenses(float expenses) {
 	previousExpenses.push_back(expenses);
 }
 
@@ -22,7 +22,7 @@ int MonthlyExpense::getDate() {
 	return paymentDueDate;
 }
 
-double MonthlyExpense::getPreviousExpenses(int index) {
+float MonthlyExpense::getPreviousExpenses(int index) {
 	return previousExpenses.at(index);
 }
 
