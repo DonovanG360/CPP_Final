@@ -26,6 +26,7 @@ using namespace std;
 // **********************
 
 int displayMenu();
+void addItem(vector<BudgetItem> &);
 
 // ************************
 //      MAIN FUNCTION
@@ -33,10 +34,17 @@ int displayMenu();
 
 int main() {
 	int uChoice = 0;
-	BudgetItem TEST;
+	vector<BudgetItem> Items;
 	do {
 		uChoice = displayMenu();
-	} while (uChoice != 6);
+
+		switch (uChoice) {
+			case 1: {
+				addItem(Items);
+			}
+		}
+
+	} while (uChoice != 8);
 
 	cout << "\n\nThank you for using my program! " << endl;
 	system("pause");
@@ -55,20 +63,33 @@ int displayMenu() {
 	cout << "2. See all Items" << endl;
 	cout << "3. Delete a certain item" << endl;
 	cout << "4. Add a monthly expense" << endl;
-	cout << "5. Save" << endl;
-	cout << "6. Quit" << endl;
+	cout << "5. Add all expenses" << endl;
+	cout << "6. Add expenses for a specific expense" << endl;
+	cout << "7. Save" << endl;
+	cout << "8. Quit" << endl;
 	cout << "   Please enter your choice: "; cin >> uChoice;
 	// Basic input validation, might replace with an exception later.
-	if (uChoice < 1 || uChoice > 6) {
+	if (uChoice < 1 || uChoice > 8) {
 		bool isValInput = false;
 		while (isValInput == false) {
 			cout << "Invalid Input: Please input a valid choice: ";
 			cin >> uChoice;
-			if (uChoice > 0 && uChoice < 7) {
+			if (uChoice > 0 && uChoice < 9) {
 				isValInput = true;
 			}
 		}
 	}
 
 	return uChoice;
+}
+
+// *******************************
+//		ADD NEW ITEM FUNCTION
+// *******************************
+
+void addItem(vector<BudgetItem> &totalItems) {
+	string name;
+	cout << "Please enter the name of the monthly expense: "; cin.ignore(1, '\n');  getline(cin, name);
+	BudgetItem newItem(name);
+	totalItems.push_back(newItem);
 }

@@ -6,6 +6,10 @@ BudgetItem::BudgetItem() {
 	budgetItemName = "";
 }
 
+BudgetItem::BudgetItem(string name) {
+	budgetItemName = name;
+}
+
 /*     SET MEMBER FUNCTIONS     */
 
 void BudgetItem::setBudgetItemName(string name) {
