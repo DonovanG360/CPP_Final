@@ -23,11 +23,52 @@
 
 using namespace std;
 
+
 // ***************************
 //      EXCEPTION CLASSES
 // ***************************
 
 class titleNotFound {};
+
+// ***********************************
+//      SEARCH ALGORITHM TEMPLATE
+// ***********************************
+
+template <typename T>
+int searchAlgo(vector<T> expense, string name) {
+	int x;
+	bool isFound = false;
+	for (int i = 0; i < expense.size(); i++) {
+		if (name == expense.at(i).getBudgetItemName()) {
+			x = i;
+			isFound = true;
+			return x;
+		}
+	}
+	if (isFound == false) {
+		throw titleNotFound();
+	}
+}
+
+// ***************************************
+//      DELETE SPECIFIC ITEM TEMPLATE
+// ***************************************
+
+// Note: the use of a template made the implementation of this function incredibly simple
+template <typename T>
+void deletion(vector<T> &expenses) {
+	string name;
+	cout << "\nPlease enter the name of the item you would like to delete: "; cin.ignore(1, '\n'); getline(cin, name);
+	try {
+		int x = searchAlgo(expenses, name);
+		cout << x << endl;
+		expenses.erase(expenses.begin() + x);
+		cout << name <<" has been successfully erased!";
+	}
+	catch (titleNotFound) {
+		cout << "Item of name " << name << " does not exist";
+	}
+}
 
 // **********************
 //      PROTOTYPES
@@ -37,7 +78,7 @@ int displayMenu();
 void newItem(vector<MonthlyExpense> &, vector<SingleExpense> &);
 void allItems(vector<MonthlyExpense>, vector<SingleExpense> );
 int addExpense(vector<MonthlyExpense> &);
-int searchAlgo(vector<MonthlyExpense>, string);
+int grabUChoice();
 
 // ************************
 //      MAIN FUNCTION
@@ -61,7 +102,16 @@ int main() {
 				addExpense(monthlyExpenses);
 				break;
 			}
-
+			case 3: {
+				int newChoice = grabUChoice();
+				if (newChoice == 1) {
+					deletion(monthlyExpenses);
+				}
+				else {
+					deletion(singlePurchases);
+				}
+				break;
+			}
 			case 4: {
 				allItems(monthlyExpenses, singlePurchases);
 				break;
@@ -83,8 +133,8 @@ int displayMenu() {
 	int uChoice = 0;
 
 	cout << "   Menu" << endl;
-	cout << "1. Add New Item" << endl;
-	cout << "2. Add a monthly expense" << endl;
+	cout << "1. Add new item" << endl;
+	cout << "2. Add a monthly payment" << endl;
 	cout << "3. Delete a certain item" << endl;
 	cout << "4. See all Items" << endl;
 	cout << "5. Add all expenses" << endl;
@@ -108,6 +158,29 @@ int displayMenu() {
 	return uChoice;
 }
 
+// ***************************
+//		GRAB USER CHOICE
+// ***************************
+
+int grabUChoice() {
+	int uChoice;
+	cout << "   Is this a: " << endl;
+	cout << "1. Monthly expense" << endl;
+	cout << "2. Single time purchase" << endl;
+	cout << "   Enter your choice: "; cin >> uChoice;
+	// Input validation
+	if (uChoice != 1 && uChoice != 2) {
+		bool isValInput = false;
+		while (isValInput == false) {
+			cout << "Input is invalid please enter a valid choice: "; cin >> uChoice;
+			if (uChoice == 1 || uChoice == 2) {
+				isValInput = true;
+			}
+		}
+	}
+	return uChoice;
+}
+
 // *******************************
 //		ADD NEW ITEM FUNCTION
 // *******************************
@@ -116,20 +189,7 @@ void newItem(vector<MonthlyExpense> &monthlyItems, vector<SingleExpense> &single
 	string name;
 	int uChoice;
 	bool isValInput;
-	cout << "   Is this a: " << endl;
-	cout << "1. Monthly expense" << endl;
-	cout << "2. Single time purchase" << endl;
-	cout << "Enter your choice: "; cin >> uChoice;
-	// Input validation
-	if (uChoice != 1 && uChoice != 2) {
-		isValInput = false;
-		while (isValInput == false) {
-			cout << "Input is invalid please enter a valid choice: "; cin >> uChoice;
-			if (uChoice == 1 || uChoice == 2) {
-				isValInput = true;
-			}
-		}
-	}
+	uChoice = grabUChoice();
 	cout << "\n";
 	switch (uChoice) {
 		case 1: {
@@ -202,25 +262,7 @@ int addExpense(vector<MonthlyExpense> &allMonths) {
 	}
 	catch (titleNotFound) {
 		cout << "Expense called " << name << " not found";
-	}
-}
-
-// ***************************
-//      SEARCH ALGORITHM
-// ***************************
-
-int searchAlgo(vector<MonthlyExpense> monthlyExpense, string name) {
-	int x;
-	bool isFound = false;
-	for (int i = 0; i < monthlyExpense.size(); i++) {
-		if (name.compare(monthlyExpense.at(i).getBudgetItemName())) {
-			x = i;
-			isFound = true;
-			return x;
-		}
-	}
-	if (isFound == false) {
-		throw titleNotFound();
+		return -1;
 	}
 }
 
@@ -228,7 +270,7 @@ int searchAlgo(vector<MonthlyExpense> monthlyExpense, string name) {
 //      SEE ALL ITEMS FUNCTION
 // ********************************
 
-void allItems(vector<MonthlyExpense> monthlyExpenses, vector<SingleExpense> purchases) {\
+void allItems(vector<MonthlyExpense> monthlyExpenses, vector<SingleExpense> purchases) {
 
 	if (purchases.size() != 0) {
 		cout << "Now displaying all items . . . " << endl;
