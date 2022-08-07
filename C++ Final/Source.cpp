@@ -77,9 +77,11 @@ void deletion(vector<T> &expenses) {
 int displayMenu();
 void newItem(vector<MonthlyExpense> &, vector<SingleExpense> &);
 void allItems(vector<MonthlyExpense>, vector<SingleExpense> );
-int submitPayment(vector<MonthlyExpense> &);
+void submitPayment(vector<MonthlyExpense> &);
 int grabUChoice();
 void totalAllExpenses(vector<MonthlyExpense>, vector<SingleExpense>);
+void save(vector<SingleExpense>, vector<MonthlyExpense>);
+void totalSpecificExpense(vector<MonthlyExpense>);
 
 // ************************
 //      MAIN FUNCTION
@@ -119,6 +121,11 @@ int main() {
 			}
 			case 5: {
 				totalAllExpenses(monthlyExpenses, singlePurchases);
+				break;
+			}
+			case 6: {
+				totalSpecificExpense(monthlyExpenses);
+				break;
 			}
 		}
 
@@ -238,7 +245,7 @@ void newItem(vector<MonthlyExpense> &monthlyItems, vector<SingleExpense> &single
 //      ADD A MONTHLY EXPENSE FUNCTION
 // ****************************************
 
-int submitPayment(vector<MonthlyExpense> &allMonths) {
+void submitPayment(vector<MonthlyExpense> &allMonths) {
 	char uChoice = 'a';
 	string name;
 	int x = 0;
@@ -262,11 +269,9 @@ int submitPayment(vector<MonthlyExpense> &allMonths) {
 			allMonths.at(x).setPreviousExpenses(expense);
 			cout << "Type 'q' to stop entering expenses, type 'c' to continue: "; cin >> uChoice;
 		}
-		return 1;
 	}
 	catch (titleNotFound) {
 		cout << "Expense called " << name << " not found";
-		return -1;
 	}
 }
 
@@ -278,7 +283,7 @@ void allItems(vector<MonthlyExpense> monthlyExpenses, vector<SingleExpense> purc
 
 	if (purchases.size() != 0) {
 		cout << "Now displaying all items . . . " << endl;
-
+		cout << "\n";
 		for (int x = 0; x < purchases.size(); x++) {
 			cout << "Name: " << purchases.at(x).getBudgetItemName() << endl;
 			cout << "Purchase Cost: $" << fixed << setprecision(2) << purchases.at(x).getCost() << endl;
@@ -320,4 +325,46 @@ void totalAllExpenses(vector<MonthlyExpense> allMonthlyExpenses, vector<SingleEx
 	cout << "The total for all purchases is:        $" << fixed << setprecision(2) << subtotalPurchase << endl;
 	cout << "The total for all monthly payments is: $" << fixed << setprecision(2) << subtotalMonth << endl;
 	cout << "The total put together is:             $" << fixed << setprecision(2) << total << endl;
+}
+
+// ****************************************************************
+//      TOTAL EXPENSES FOR A SPECIFIC MONTHLY PAYMENT FUNCTION
+// ****************************************************************
+
+void totalSpecificExpense(vector<MonthlyExpense> allMonthlyExpenses) {
+	string name;
+	float totalMonth;
+	cout << "Please enter the name of the monthly expense: "; cin.ignore(1, '\n');  getline(cin, name);
+	try {
+		int x = searchAlgo(allMonthlyExpenses, name);
+		for (int i = 0; i < allMonthlyExpenses.at(x).getPreviousExpensesSize(); i++) {
+			totalMonth = totalMonth + allMonthlyExpenses.at(x).getPreviousExpenses(i);
+		}
+		cout << "The total for " << name << " is : $" << fixed << setprecision(2) << totalMonth;
+	}
+	catch (titleNotFound) {
+		cout << "Expense called " << name << " not found";
+	}
+}
+
+// ******************************
+//      SAVE OPTION FUNCTION
+// ******************************
+
+void save(vector<SingleExpense> singleExpenses, vector<MonthlyExpense> monthlyExpenses) {
+	fstream file1, file2;
+	file1.open("singleExpense.dat", ios::app | ios::binary);
+	if (file1.fail()) {
+		cout << "FAILED TO SAVE TO 'singleExpense.dat'" << endl;
+	}
+	file2.open("monthExpense.dat", ios::app | ios::binary);
+	if (file2.fail()) {
+		cout << "FAILED TO SAVE TO 'monthExpense.dat'" << endl;
+	}
+	for (int i = 0; i < singleExpenses.size(); i++) {
+		file1.write(reinterpret_cast<const char*>(&singleExpenses.at(i)), singleExpenses.size());
+	}
+
+	file1.close();
+	file2.close();
 }
