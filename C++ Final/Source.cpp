@@ -3,7 +3,7 @@
 // 7-6-2022
 // Personal Budget Calculator
 
-// My thoughts is that this project is going to act as a monthly budget calculator that allows users to add their own items to the system
+// Code is intended to be used as a way to store and total up recent expenses
 
 #include "BudgetItem.h"
 #include "MonthlyExpense.h"
@@ -58,12 +58,11 @@ int searchAlgo(vector<T> expense, string name) {
 template <typename T>
 void deletion(vector<T> &expenses) {
 	string name;
-	cout << "\nPlease enter the name of the item you would like to delete: "; cin.ignore(1, '\n'); getline(cin, name);
+	cout << "\nPlease enter the name of the item you would like to delete (case sensitive): "; cin.ignore(1, '\n'); getline(cin, name);
 	try {
 		int x = searchAlgo(expenses, name);
-		cout << x << endl;
 		expenses.erase(expenses.begin() + x);
-		cout << name <<" has been successfully erased!";
+		cout << name <<" has been successfully erased!" << endl;
 	}
 	catch (titleNotFound) {
 		cout << "Item of name " << name << " does not exist";
@@ -74,13 +73,13 @@ void deletion(vector<T> &expenses) {
 //      PROTOTYPES
 // **********************
 
+
 int displayMenu();
 void newItem(vector<MonthlyExpense> &, vector<SingleExpense> &);
 void allItems(vector<MonthlyExpense>, vector<SingleExpense> );
 void submitPayment(vector<MonthlyExpense> &);
 int grabUChoice();
 void totalAllExpenses(vector<MonthlyExpense>, vector<SingleExpense>);
-void save(vector<SingleExpense>, vector<MonthlyExpense>);
 void totalSpecificExpense(vector<MonthlyExpense>);
 
 // ************************
@@ -129,7 +128,7 @@ int main() {
 			}
 		}
 
-	} while (uChoice != 8);
+	} while (uChoice != 7);
 
 	cout << "\n\nThank you for using my program! " << endl;
 	system("pause");
@@ -145,21 +144,20 @@ int displayMenu() {
 
 	cout << "   Menu" << endl;
 	cout << "1. Add new item" << endl;
-	cout << "2. Add a monthly payment" << endl;
+	cout << "2. Submit a monthly payment" << endl;
 	cout << "3. Delete a certain item" << endl;
 	cout << "4. See all Items" << endl;
 	cout << "5. Add all expenses" << endl;
 	cout << "6. Add expenses for a specific expense" << endl;
-	cout << "7. Save" << endl;
-	cout << "8. Quit" << endl;
+	cout << "7. Quit" << endl;
 	cout << "   Please enter your choice: "; cin >> uChoice;
 	// Basic input validation, might replace with an exception later.
-	if (uChoice < 1 || uChoice > 8) {
+	if (uChoice < 1 || uChoice > 7) {
 		bool isValInput = false;
 		while (isValInput == false) {
 			cout << "Invalid Input: Please input a valid choice: ";
 			cin >> uChoice;
-			if (uChoice > 0 && uChoice < 9) {
+			if (uChoice > 0 && uChoice < 8) {
 				isValInput = true;
 			}
 		}
@@ -203,9 +201,10 @@ void newItem(vector<MonthlyExpense> &monthlyItems, vector<SingleExpense> &single
 	uChoice = grabUChoice();
 	cout << "\n";
 	switch (uChoice) {
+		// IF MONTHLY EXPENSE IS CHOSEN
 		case 1: {
 			int date;
-			cout << "Please enter the name of the monthly expense: "; cin.ignore(1, '\n');  getline(cin, name);
+			cout << "Please enter the name of the monthly expense:       "; cin.ignore(1, '\n');  getline(cin, name);
 			cout << "Please enter the day the payment is due each month: "; cin >> date;
 			// Input validation
 			if (date > 31 || date < 1) {
@@ -221,10 +220,11 @@ void newItem(vector<MonthlyExpense> &monthlyItems, vector<SingleExpense> &single
 			monthlyItems.push_back(newExpense);
 			break;
 		}
+		// IF SINGLE EXPENSE IS CHOSEN
 		case 2: {
 			float cost;
-			cout << "Please enter the purchase name: "; cin.ignore(1, '\n'); getline(cin, name);
-			cout << "Please enter the cost: $"; cin >> cost;
+			cout << "Please enter the purchase name:  "; cin.ignore(1, '\n'); getline(cin, name);
+			cout << "Please enter the cost:          $"; cin >> cost;
 			if (cost < 0) {
 				isValInput = false;
 				while (isValInput == false) {
@@ -249,13 +249,13 @@ void submitPayment(vector<MonthlyExpense> &allMonths) {
 	char uChoice = 'a';
 	string name;
 	int x = 0;
-	cout << "Enter the name of the item you want to add to (case sensitive): "; cin.ignore(1, '\n'); getline(cin, name);
+	cout << "Enter the name of the item you want to submit for (case sensitive): "; cin.ignore(1, '\n'); getline(cin, name);
 	try {
 		x = searchAlgo(allMonths, name);
 
 		double expense;
 		while (tolower(uChoice) != 'q') {
-			cout << "Enter in expense #" << allMonths.at(x).getPreviousExpensesSize() + 1 << ": "; cin >> expense;
+			cout << "Enter in expense #" << allMonths.at(x).getPreviousExpensesSize() + 1 << ": $"; cin >> expense;
 			// Input Validation
 			if (expense < 0) {
 				bool isValInput = false;
@@ -268,6 +268,16 @@ void submitPayment(vector<MonthlyExpense> &allMonths) {
 			}
 			allMonths.at(x).setPreviousExpenses(expense);
 			cout << "Type 'q' to stop entering expenses, type 'c' to continue: "; cin >> uChoice;
+			// input validation
+			if (tolower(uChoice) != 'q' && tolower(uChoice) != 'c') {
+				bool isValInput = false;
+				while (isValInput == false) {
+					cout << "Type 'q' to stop entering expenses, type 'c' to continue: "; cin >> uChoice;
+					if (tolower(uChoice) == 'q' || tolower(uChoice) == 'c') {
+						isValInput = true;
+					}
+				}
+			}
 		}
 	}
 	catch (titleNotFound) {
@@ -283,20 +293,20 @@ void allItems(vector<MonthlyExpense> monthlyExpenses, vector<SingleExpense> purc
 
 	if (purchases.size() != 0) {
 		cout << "Now displaying all items . . . " << endl;
-		cout << "\n";
 		for (int x = 0; x < purchases.size(); x++) {
-			cout << "Name: " << purchases.at(x).getBudgetItemName() << endl;
-			cout << "Purchase Cost: $" << fixed << setprecision(2) << purchases.at(x).getCost() << endl;
+			cout << "\nName: " << purchases.at(x).getBudgetItemName() << endl;
+			cout << "Purchase Cost: $" << right << setw(12) << fixed << setprecision(2) << purchases.at(x).getCost() << endl;
 		}
 	}
 
 	if (monthlyExpenses.size() != 0) {
 		cout << "\nNow displaying all monthly expenses . . . " << endl;
+		cout << "\n";
 		for (int i = 0; i < monthlyExpenses.size(); i++) {
 			cout << "Name: " << monthlyExpenses.at(i).getBudgetItemName() << endl;
-			cout << "Payment date: " << monthlyExpenses.at(i).getDate() << endl;
+			cout << "Payment Date: " << monthlyExpenses.at(i).getDate() << endl;
 			for (int j = 0; j < monthlyExpenses.at(i).getPreviousExpensesSize(); j++) {
-				cout << "\tExpense #" << j + 1 << ": " << monthlyExpenses.at(i).getPreviousExpenses(j) << endl;
+				cout << "\tExpense #" << j + 1 << ": $" << right << setw(12) << monthlyExpenses.at(i).getPreviousExpenses(j) << endl;
 			}
 			cout << "\n";
 		}
@@ -322,9 +332,9 @@ void totalAllExpenses(vector<MonthlyExpense> allMonthlyExpenses, vector<SingleEx
 		}
 	}
 	total = subtotalMonth + subtotalPurchase;
-	cout << "The total for all purchases is:        $" << fixed << setprecision(2) << subtotalPurchase << endl;
-	cout << "The total for all monthly payments is: $" << fixed << setprecision(2) << subtotalMonth << endl;
-	cout << "The total put together is:             $" << fixed << setprecision(2) << total << endl;
+	cout << "The total for all purchases is:        $" << right << setw(12) << fixed << setprecision(2) << subtotalPurchase << endl;
+	cout << "The total for all monthly payments is: $" << right << setw(12) << fixed << setprecision(2) << subtotalMonth << endl;
+	cout << "The total put together is:             $" << right << setw(12) << fixed << setprecision(2) << total << endl;
 }
 
 // ****************************************************************
@@ -333,38 +343,17 @@ void totalAllExpenses(vector<MonthlyExpense> allMonthlyExpenses, vector<SingleEx
 
 void totalSpecificExpense(vector<MonthlyExpense> allMonthlyExpenses) {
 	string name;
-	float totalMonth;
-	cout << "Please enter the name of the monthly expense: "; cin.ignore(1, '\n');  getline(cin, name);
+	float totalMonth = 0;
+	cout << "Please enter the name of the monthly expense (case sensitive): "; cin.ignore(1, '\n');  getline(cin, name);
 	try {
 		int x = searchAlgo(allMonthlyExpenses, name);
+		cout << "\n";
 		for (int i = 0; i < allMonthlyExpenses.at(x).getPreviousExpensesSize(); i++) {
 			totalMonth = totalMonth + allMonthlyExpenses.at(x).getPreviousExpenses(i);
 		}
-		cout << "The total for " << name << " is : $" << fixed << setprecision(2) << totalMonth;
+		cout << "The total for " << name << " is : $" << fixed << setprecision(2) << totalMonth << "\n" << endl;
 	}
 	catch (titleNotFound) {
-		cout << "Expense called " << name << " not found";
+		cout << "Expense called " << name << " not found\n";
 	}
-}
-
-// ******************************
-//      SAVE OPTION FUNCTION
-// ******************************
-
-void save(vector<SingleExpense> singleExpenses, vector<MonthlyExpense> monthlyExpenses) {
-	fstream file1, file2;
-	file1.open("singleExpense.dat", ios::app | ios::binary);
-	if (file1.fail()) {
-		cout << "FAILED TO SAVE TO 'singleExpense.dat'" << endl;
-	}
-	file2.open("monthExpense.dat", ios::app | ios::binary);
-	if (file2.fail()) {
-		cout << "FAILED TO SAVE TO 'monthExpense.dat'" << endl;
-	}
-	for (int i = 0; i < singleExpenses.size(); i++) {
-		file1.write(reinterpret_cast<const char*>(&singleExpenses.at(i)), singleExpenses.size());
-	}
-
-	file1.close();
-	file2.close();
 }

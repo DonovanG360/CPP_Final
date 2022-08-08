@@ -1,14 +1,16 @@
 #include "MonthlyExpense.h"
 
-MonthlyExpense::MonthlyExpense() {
+/*     CONSTRUCTORS     */
+
+MonthlyExpense::MonthlyExpense() : BudgetItem() {
 	paymentDueDate = 1;
-	budgetItemName = "";
 }
 
-MonthlyExpense::MonthlyExpense(int date, string name) {
+MonthlyExpense::MonthlyExpense(int date, string name) : BudgetItem(name) {
 	paymentDueDate = date;
-	budgetItemName = name;
 }
+
+/*     SET MEMBER FUNCTIONS     */
 
 void MonthlyExpense::setPreviousExpenses(float expenses) {
 	previousExpenses.push_back(expenses);
@@ -17,6 +19,8 @@ void MonthlyExpense::setPreviousExpenses(float expenses) {
 void MonthlyExpense::setNewDate(int date) {
 	paymentDueDate = date;
 }
+
+/*     GET MEMBER FUNCTIONS     */
 
 int MonthlyExpense::getDate() {
 	return paymentDueDate;

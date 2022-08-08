@@ -1,18 +1,22 @@
 #include "SingleExpense.h"
 
-SingleExpense::SingleExpense() {
+/*     CONSTRUCTORS     */
+
+SingleExpense::SingleExpense() : BudgetItem() {
 	cost = 0;
-	budgetItemName = "";
 }
 
-SingleExpense::SingleExpense(float price, string name) {
+SingleExpense::SingleExpense(float price, string name) : BudgetItem(name) {
 	cost = price;
-	budgetItemName = name;
 }
+
+/*     SET MEMBER FUNCTIONS     */
 
 void SingleExpense::setCost(float itemCost) {
 	cost = itemCost;
 }
+
+/*     GET MEMBER FUNCTIONS     */
 
 float SingleExpense::getCost() {
 	return cost;
